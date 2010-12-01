@@ -1,9 +1,9 @@
 UNAME := $(shell uname -r)
 
-obj-m	:= iaps.o lsrot.o
+obj-m := iaps.o
 
-KDIR := /lib/modules/$(shell uname -r)/build
-PWD	 := $(shell pwd)
+KDIR  := /lib/modules/$(shell uname -r)/build
+PWD	  := $(shell pwd)
 
 all:
 	$(MAKE) -C $(KDIR) $(INCLUDE) SUBDIRS=$(PWD) modules
