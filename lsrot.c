@@ -59,8 +59,10 @@
 /* the input device */
 static struct input_dev *input_dev;
 
+#if 0
 /* the debugfs dir */
 static struct dentry *debugfs_dir;
+#endif
 
 static void report_key(int key)
 {
@@ -117,7 +119,7 @@ static int set_ap_bit(int ap, bool enabled)
 	buffer[16] = enabled ? 1 : 0;
 
 	printk(KERN_DEBUG "%s: setting ap bit %d to %d\n", DRIVER_NAME,
-		bit, enabled ? 1 : 0);
+		ap, enabled ? 1 : 0);
 
 	status = wmi_set_block(WMI_ACPI_BLOCK_GUID, 0, &input);
 	if (ACPI_FAILURE(status)) {
@@ -176,7 +178,7 @@ static int __init lsrot_init_module (void) {
 		err = -ENODEV;
 		goto err_clean;
 	}
-	if (!wmi_has_guid(WMI_ACPI_IO_GUID)) {
+	if (!wmi_has_guid(WMI_ACPI_BLOCK_GUID)) {
 		printk(KERN_ERR "%s: missing WMIACPIIO instance\n",
 		       DRIVER_NAME);
 		err = -ENODEV;
@@ -255,5 +257,5 @@ MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 
 MODULE_ALIAS("wmi:" WMI_ACPI_EVENT_GUID);
-MODULE_ALIAS("wmi:" WMI_ACPI_IO_GUID);
+MODULE_ALIAS("wmi:" WMI_ACPI_BLOCK_GUID);
 
