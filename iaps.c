@@ -4,6 +4,7 @@
  *  Copyright (C) 2005 Robert Love <rml@novell.com>
  *  Copyright (C) 2005 Jesper Juhl <jesper.juhl@gmail.com>
  *  Copyright (C) 2010 Javier S. Pedro <maemo@javispedro.com>
+ *  Copyright (C) 2012 Stephen Chandler Paul <thatslyude@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
