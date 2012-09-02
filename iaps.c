@@ -54,6 +54,7 @@
 #define IAPS_INPUT_FLAT	6
 
 static struct input_polled_dev *idev;
+static struct platform_device *pdev;
 
 static inline u8 iaps_readb(u8 idx)
 {
@@ -130,6 +131,22 @@ static void iaps_poll(struct input_polled_dev *dev)
 	input_sync(input_dev);
 }
 
+static ssize_t hdaps_position_show(struct device *dev,
+				   struct device_attribute *attr, char *buf) {
+	return sprintf(buf, "(%d,%d)\n", iaps_readw(IAPS_REG_POS_X), iaps_readw(IAPS_REG_POS_Y));
+}
+
+static DEVICE_ATTR(position, 0444, hdaps_position_show, NULL);
+
+static struct attribute *hdaps_attributes[] = {
+	&dev_attr_position.attr,
+	NULL,
+};
+
+static struct attribute_group hdaps_attribute_group = {
+	.attrs = hdaps_attributes,
+};
+
 static int __init iaps_init(void) {
 	int ret;
 
@@ -148,9 +165,9 @@ static int __init iaps_init(void) {
 	idev->poll_interval = IAPS_POLL_INTERVAL;
 
 	/* Initialize the input class */
-	idev->input->name = "iaps";
-	idev->input->phys = "isa702/input0";
-	idev->input->id.bustype = BUS_ISA;
+	idev->input->name = "IdeaPad HDAPS accelerometer data";
+	idev->input->phys = "hdaps/input1";
+	idev->input->id.bustype = BUS_HOST;
 	idev->input->evbit[0] = BIT_MASK(EV_ABS);
 	input_set_abs_params(idev->input, ABS_X,
 			IAPS_RANGE_MIN, IAPS_RANGE_MAX, IAPS_INPUT_FUZZ, IAPS_INPUT_FLAT);
@@ -161,6 +178,15 @@ static int __init iaps_init(void) {
 	if (ret)
 		goto out_idev;
 
+	/* Register as platform device */
+	pdev = platform_device_register_simple("hdaps", -1, NULL, 0);
+	if (IS_ERR(pdev))
+		goto out;
+
+	ret = sysfs_create_group(&pdev->dev.kobj, &hdaps_attribute_group);
+	if (ret)
+		goto out;
+
 	printk(KERN_INFO "iaps: driver initialized\n");
 	return 0;
 
@@ -170,6 +196,7 @@ out_region:
 	release_region(IAPS_LOW_PORT, IAPS_NR_PORTS);
 out:
 	printk(KERN_WARNING "iaps: driver init failed (ret=%d)!\n", ret);
+	platform_device_unregister(pdev);
 	return ret;
 }
 
