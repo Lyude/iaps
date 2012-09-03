@@ -132,9 +132,11 @@ static void iaps_poll(struct input_polled_dev *dev)
 	input_sync(input_dev);
 }
 
+/* Returns accelerometer data in a format hdaps can read */
 static ssize_t hdaps_position_show(struct device *dev,
 				   struct device_attribute *attr, char *buf) {
-	return sprintf(buf, "(%d,%d)\n", iaps_readw(IAPS_REG_POS_X), iaps_readw(IAPS_REG_POS_Y));
+	return sprintf(buf, "(%d,%d)\n",
+		       iaps_readw(IAPS_REG_POS_X), iaps_readw(IAPS_REG_POS_Y));
 }
 
 static DEVICE_ATTR(position, 0444, hdaps_position_show, NULL);
